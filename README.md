@@ -1,96 +1,94 @@
-# Claude Vision — Video Analyzer Skill
+# Claude Vision — Skill de Análise de Vídeo
 
-Join 550+ Performance Marketing Teams Inside SCALE AI: https://www.skool.com/scale-ai/about
+Dê ao Claude Code a capacidade de "assistir" vídeos.
 
-Give Claude Code the ability to "watch" videos.
+Esta é uma skill do Claude Code que encaminha qualquer arquivo de vídeo pela API Gemini do Google (que tem entendimento nativo de vídeo) e retorna um relatório estruturado em markdown — resumo geral, decomposição cena a cena com marcações de tempo, transcrição de áudio, detalhes visuais e momentos-chave. Funciona com gravações de tela, anúncios UGC, tutoriais, demonstrações, gravações de reuniões — qualquer coisa que o Gemini consiga processar.
 
-This is a Claude Code skill that routes any video file through Google's Gemini API (which has native video understanding) and returns a structured markdown report — top-level summary, scene-by-scene breakdown with timestamps, audio transcript, visual details, and key moments. Works on screen recordings, UGC ads, tutorials, demos, meeting recordings — anything Gemini can ingest.
+Possui salvaguardas fortes contra alucinação: não inventa narradores, locuções nem nomes de quem fala que não estejam de fato no vídeo.
 
-It has strong anti-hallucination guardrails: it will not invent narrators, voiceovers, or speaker names that aren't actually in the video.
+## Instalação
 
-## Install
-
-### 1. Clone this repo
+### 1. Clone este repositório
 
 ```bash
-git clone https://github.com/mikefutia/claude-vision.git
+git clone https://github.com/seu-usuario/claude-vision.git
 ```
 
-### 2. Move it into your Claude Code skills folder
+### 2. Mova para a sua pasta de skills do Claude Code
 
 ```bash
 mv claude-vision ~/.claude/skills/video-analyzer
 ```
 
-The folder name **must** be `video-analyzer` — that's how Claude Code finds the skill.
+O nome da pasta **deve** ser `video-analyzer` — é assim que o Claude Code encontra a skill.
 
-### 3. Get a free Gemini API key
+### 3. Obtenha uma chave de API gratuita do Gemini
 
-Go to [Google AI Studio](https://aistudio.google.com/apikey) and create a key. The free tier is generous and fine for personal use.
+Acesse o Google AI Studio e crie uma chave. O nível gratuito é generoso e suficiente para uso pessoal.
 
-### 4. Set the API key
+### 4. Defina a chave de API
 
-The easiest way: open Claude Code in any project and ask it to set up the key for you. Something like:
+A forma mais fácil: abra o Claude Code em qualquer projeto e peça para ele configurar a chave para você. Algo como:
 
-> "Set my GEMINI_API_KEY to `your_key_here` so it's available in every new shell."
+> "Defina minha GEMINI_API_KEY como `sua_chave_aqui` para que fique disponível em todo novo shell."
 
-Claude Code will add the export to your shell profile and confirm it works. You won't need to touch `.zshrc` yourself.
+O Claude Code adicionará o export ao perfil do seu shell e confirmará que funciona. Você não precisará mexer no `.zshrc` por conta própria.
 
-### 5. Install the Python dependency
+### 5. Instale a dependência Python
 
-The skill uses Google's official Gemini SDK:
+A skill usa o SDK oficial do Gemini do Google:
 
 ```bash
 pip install google-genai
 ```
 
-If pip complains about an externally-managed environment, use:
+Se o pip reclamar de um ambiente gerenciado externamente, use:
 
 ```bash
 pip install google-genai --break-system-packages
 ```
 
-### 6. Use the skill
+### 6. Use a skill
 
-In Claude Code, just point it at a video:
+No Claude Code, basta apontar para um vídeo:
 
-> "Use the video-analyzer skill on /path/to/my-video.mp4"
+> "Use a skill video-analyzer em /caminho/para/meu-video.mp4"
 
-Or invoke it directly:
+Ou invoque diretamente:
 
 > "/video-analyzer ~/Downloads/demo.mp4"
 
-Claude will run the analysis and present the structured report.
+O Claude executará a análise e apresentará o relatório estruturado.
 
-## What you can do with it
+## O que você pode fazer com ela
 
-- **Ad teardowns** — drop in a competitor's UGC ad, get a beat-by-beat breakdown
-- **Tutorial → SOP** — turn a Loom recording into a written step-by-step guide
-- **Meeting recaps** — extract decisions and action items from a call
-- **Demo notes** — summarize what happened in a screen recording
-- **General "what's in this video?"** — any video, any question
+- **Decomposição de anúncios** — solte um anúncio UGC de um concorrente e obtenha uma análise momento a momento
+- **Tutorial → POP** — transforme uma gravação do Loom em um guia escrito passo a passo
+- **Resumos de reuniões** — extraia decisões e itens de ação de uma chamada
+- **Notas de demonstração** — resuma o que aconteceu em uma gravação de tela
+- **"O que tem neste vídeo?" em geral** — qualquer vídeo, qualquer pergunta
 
-## Supported formats
+## Formatos suportados
 
 mp4, mov, webm, avi, mpeg, mpg, flv, wmv, 3gpp, 3gp
 
-## Optional flags
+## Flags opcionais
 
 ```
-/video-analyzer <path> [--prompt "custom prompt"] [--fps N] [--model gemini-2.5-flash]
+/video-analyzer <caminho> [--prompt "prompt personalizado"] [--fps N] [--model gemini-2.5-flash]
 ```
 
-- `--prompt` — override the default structured-report prompt with anything you want
-- `--fps` — change the frame sampling rate (default 1 fps; raise it for fast-cut content)
-- `--model` — pick a different Gemini model (default `gemini-3-flash-preview`)
+- `--prompt` — substitua o prompt padrão de relatório estruturado pelo que quiser
+- `--fps` — altere a taxa de amostragem de quadros (padrão 1 fps; aumente para conteúdo com cortes rápidos)
+- `--model` — escolha outro modelo Gemini (padrão `gemini-3-flash-preview`)
 
-## Troubleshooting
+## Resolução de problemas
 
-- **"GEMINI_API_KEY environment variable is not set"** — your key isn't visible to the shell Claude Code is running in. Open a new terminal and try again, or ask Claude Code to fix it.
-- **"google-genai is not installed"** — run `pip install google-genai` (see step 5).
-- **Upload timeout on big files** — Gemini's Files API can take 30–60 seconds to process longer videos. The script polls for up to 5 minutes before giving up.
-- **Model 404** — try `--model gemini-2.5-flash` if the default preview model isn't available in your region.
+- **"GEMINI_API_KEY environment variable is not set"** — sua chave não está visível para o shell em que o Claude Code está rodando. Abra um novo terminal e tente novamente, ou peça ao Claude Code para corrigir.
+- **"google-genai is not installed"** — rode `pip install google-genai` (veja o passo 5).
+- **Timeout de upload em arquivos grandes** — a Files API do Gemini pode levar de 30 a 60 segundos para processar vídeos mais longos. O script faz sondagem por até 5 minutos antes de desistir.
+- **Modelo 404** — tente `--model gemini-2.5-flash` se o modelo preview padrão não estiver disponível na sua região.
 
-## License
+## Licença
 
-MIT — do whatever you want with it.
+MIT — faça o que quiser com ela.
